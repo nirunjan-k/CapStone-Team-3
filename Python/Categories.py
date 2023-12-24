@@ -1,19 +1,21 @@
-DROP TABLE IF EXISTS STG_Categories; 
-select * into STG_Categories from
-(select * from dbo.Categories)a;
- 
-merge into Project.dbo.STG_Categories sc  
-using Project.dbo.Categories c on
-sc.CategoryID = c.CategoryID
-when matched and (sc.CategoryName<>c.CategoryName  or sc.Description<>c.Description)
-then update
-set
-sc.CategoryName = c.CategoryName,
-sc.Description = c.Description
-when not matched
-then insert values(c.CategoryID,c.CategoryName,c.Description)
-when not matched by source
-then delete;
- 
- 
-select * from STG_Categories;
+import pyodbc
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("C:\\Technical Training\\Project\\Categories.csv",quotechar="\"")
+
+df.columns = df.columns.astype(str)
+df.replace({np.inf: np.nan, -np.inf: np.nan}, inplace=True)
+df = df.fillna(0)
+
+cnxn = pyodbc.connect('''Driver=SQL Server;Server=IN3509253W1;Database=Project;Trusted_Connection=yes;''')
+
+cursor = cnxn.cursor()
+cursor.execute("Truncate table dbo.Categories")
+
+for index, row in df.iterrows():
+    cursor.execute("INSERT INTO dbo.Categories(CategoryID,CategoryName,Description) values(?,?,?)", row.CategoryID,row.CategoryName,row.Description)
+
+cnxn.commit()
+print('Done')
+cursor.close()
