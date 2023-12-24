@@ -1,39 +1,17 @@
- 
-DROP TABLE IF EXISTS STG_Customers;
-select * into STG_Customers from
-(select * from dbo.Customers)a;
- 
-merge into Project.dbo.STG_Customers scust
-using Project.dbo.Customers cust on
-scust.CustomerID = cust.CustomerID
-when matched and (scust.CustomerID!=cust.CustomerID or 
-scust.CompanyName!=cust.CompanyName or
-scust.ContactName!=cust.ContactName or 
-scust.ContactTitle!=cust.ContactTitle or 
-scust.Address!=cust.Address or
-scust.City!=cust.City or 
-scust.Region!=cust.Region or 
-scust.PostalCode!=cust.PostalCode or 
-scust.Country!=cust.Country or 
-scust.Phone!=cust.Phone or
-scust.Fax!=cust.Fax)
-then update
-set
-scust.CustomerID=cust.CustomerID, 
-scust.CompanyName=cust.CompanyName, 
-scust.ContactName=cust.ContactName, 
-scust.ContactTitle=cust.ContactTitle, 
-scust.Address=cust.Address, 
-scust.City=cust.City, 
-scust.Region=cust.Region, 
-scust.PostalCode=cust.PostalCode, 
-scust.Country=cust.Country, 
-scust.Phone=cust.Phone, 
-scust.Fax=cust.Fax
-when not matched
-then insert values(cust.CustomerID, cust.CompanyName, cust.ContactName, cust.ContactTitle, 
-cust.Address, cust.City, cust.Region, cust.PostalCode, cust.Country, cust.Phone, cust.Fax)
-when not matched by source
-then delete;
- 
-select * from STG_Customers;
+# import pyodbc
+# import pandas as pd
+# import numpy as np
+#
+# df = pd.read_csv("C:\\Technical Training\\Project\\Customers.csv",quotechar="\"")
+# df.columns = df.columns.astype(str)
+# df.replace({np.inf: np.nan, -np.inf: np.nan}, inplace=True)
+# df = df.fillna(0)
+#
+# cnxn = pyodbc.connect('''Driver=SQL Server;Server=IN3509253W1;Database=Project;Trusted_Connection=yes;''')
+# cursor = cnxn.cursor()
+# cursor.execute("Truncate table dbo.customers")
+#
+# for index, row in df.iterrows():
+#     cursor.execute("INSERT INTO dbo.Customers(CustomerID, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax) values(?,?,?,?,?,?,?,?,?,?,?)", row.CustomerID,row.CompanyName,row.ContactName,row.ContactTitle,row.Address,row.City,row.Region,row.PostalCode,row.Country,row.Phone,row.Fax)
+# cnxn.commit()
+# cursor.close()
